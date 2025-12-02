@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trình Soạn Thảo HTML - VS Code</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .header {
+            background: #323233;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #000;
+        }
+
+        .header h1 {
+            font-size: 14px;
+            font-weight: 500;
+            color: #cccccc;
+            flex: 1;
+        }
+
+        .btn {
+            background: #0e639c;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: #1177bb;
+        }
+
+        .btn-secondary {
+            background: #3c3c3c;
+        }
+
+        .btn-secondary:hover {
+            background: #505050;
+        }
+
+        .btn-success {
+            background: #0e7c0e;
+        }
+
+        .btn-success:hover {
+            background: #129412;
+        }
+
+        .tabs-container {
+            background: #252526;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            padding: 0 8px;
+            overflow-x: auto;
+            border-bottom: 1px solid #000;
+        }
+
+        .tab {
+            background: #2d2d2d;
+            color: #969696;
+            border: none;
+            padding: 10px 16px;
+            cursor: pointer;
+            font-size: 13px;
+            border-top: 2px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .tab.active {
+            background: #1e1e1e;
+            color: #ffffff;
+            border-top-color: #0e639c;
+        }
+
+        .tab:hover {
+            background: #323232;
+        }
+
+        .tab-close {
+            color: #858585;
+            font-size: 18px;
+            line-height: 1;
+            margin-left: 4px;
+        }
+
+        .tab-close:hover {
+            color: #fff;
+        }
+
+        .container {
+            display: flex;
+            height: calc(100vh - 90px);
+        }
+
+        .editor-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #000;
+            position: relative;
+        }
+
+        .editor-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        .editor {
+            width: 100%;
+            height: 100%;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border: none;
+            padding: 16px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: none;
+            outline: none;
+        }
+
+        .autocomplete {
+            position: absolute;
+            background: #252526;
+            border: 1px solid #454545;
+            border-radius: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .autocomplete-item {
+            padding: 6px 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .autocomplete-item:hover,
+        .autocomplete-item.selected {
+            background: #094771;
+        }
+
+        .autocomplete-icon {
+            color: #4ec9b0;
+            font-weight: bold;
+        }
+
+        .errors {
+            background: #1e1e1e;
+            border-top: 1px solid #000;
+            padding: 8px 16px;
+            max-height: 150px;
+            overflow-y: auto;
+            font-size: 12px;
+        }
+
+        .error-item {
+            padding: 4px 0;
+            color: #f48771;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .error-icon {
+            color: #f14c4c;
+        }
+
+        .preview-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+        }
+
+        .preview-header {
+            background: #252526;
+            padding: 8px 16px;
+            font-size: 13px;
+            color: #cccccc;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .preview-frame {
+            flex: 1;
+            border: none;
+            background: white;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: #252526;
+            border-right: 1px solid #000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 12px 16px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #cccccc;
+            letter-spacing: 0.5px;
+        }
+
+        .file-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .file-item {
+            padding: 6px 16px;
+            cursor: pointer;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .file-item:hover {
+            background: #2a2d2e;
+        }
+
+        .file-item.active {
+            background: #37373d;
+        }
+
+        .file-icon {
+            color: #e37933;
+        }
+
+        .image-gallery {
+            padding: 8px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 8px;
+        }
+
+        .image-item {
+            position: relative;
+            aspect-ratio: 1;
+            cursor: pointer;
+            border: 2px solid transparent;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .image-item:hover {
+            border-color: #0e639c;
+        }
+
+        .image-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-delete {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            border: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            display: none;
+        }
+
+        .image-item:hover .image-delete {
+            display: block;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .status-bar {
+            background: #007acc;
+            color: white;
+            padding: 4px 16px;
+            font-size: 12px;
+            display: flex;
+            gap: 20px;
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1e1e1e;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #424242;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4e4e4e;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📝 Trình Soạn Thảo HTML</h1>
+        <button class="btn" onclick="addNewFile()">+ File Mới</button>
+        <button class="btn btn-secondary" onclick="document.getElementById('imageUpload').click()">📷 Tải Ảnh</button>
+        <button class="btn btn-success" onclick="saveProject()">💾 Lưu Dự Án</button>
+        <button class="btn btn-secondary" onclick="document.getElementById('loadProject').click()">📂 Mở Dự Án</button>
+        <input type="file" id="imageUpload" accept="image/*" multiple onchange="handleImageUpload(event)">
+        <input type="file" id="loadProject" accept=".minhsoora" onchange="loadProject(event)">
+    </div>
+
+    <div style="display: flex; height: calc(100vh - 44px);">
+        <div class="sidebar">
+            <div class="sidebar-header">Tệp Tin</div>
+            <div class="file-list" id="fileList"></div>
+            <div class="sidebar-header" style="margin-top: 16px;">Thư Viện Ảnh</div>
+            <div class="image-gallery" id="imageGallery"></div>
+        </div>
+
+        <div style="flex: 1; display: flex; flex-direction: column;">
+            <div class="tabs-container" id="tabsContainer"></div>
+            
+            <div class="container">
+                <div class="editor-panel">
+                    <div class="editor-wrapper">
+                        <textarea class="editor" id="editor" placeholder="Bắt đầu viết HTML của bạn..."></textarea>
+                        <div class="autocomplete" id="autocomplete"></div>
+                    </div>
+                    <div class="errors" id="errors"></div>
+                </div>
+
+                <div class="preview-panel">
+                    <div class="preview-header">
+                        👁️ Xem Trước Trực Tiếp
+                    </div>
+                    <iframe class="preview-frame" id="preview"></iframe>
+                </div>
+            </div>
+
+            <div class="status-bar">
+                <span id="status">✅ Sẵn sàng</span>
+                <span id="charCount">Ký tự: 0</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let files = [{ id: 1, name: 'index.html', content: '' }];
+        let currentFileId = 1;
+        let images = [];
+        let fileIdCounter = 1;
+
+        const htmlTags = [
+            'html', 'head', 'title', 'body', 'div', 'span', 'p', 'a', 'img', 'ul', 'ol', 'li',
+            'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'table', 'tr', 'td', 'th', 'form', 'input',
+            'button', 'textarea', 'select', 'option', 'label', 'header', 'footer', 'nav',
+            'section', 'article', 'aside', 'main', 'figure', 'figcaption', 'video', 'audio',
+            'canvas', 'svg', 'iframe', 'script', 'style', 'link', 'meta', 'br', 'hr'
+        ];
+
+        const editor = document.getElementById('editor');
+        const preview = document.getElementById('preview');
+        const autocomplete = document.getElementById('autocomplete');
+        const errors = document.getElementById('errors');
+        let selectedIndex = -1;
+
+        function renderTabs() {
+            const container = document.getElementById('tabsContainer');
+            container.innerHTML = files.map(file => `
+                <button class="tab ${file.id === currentFileId ? 'active' : ''}" onclick="switchFile(${file.id})">
+                    <span class="file-icon">📄</span>
+                    ${file.name}
+                    ${files.length > 1 ? `<span class="tab-close" onclick="event.stopPropagation(); deleteFile(${file.id})">×</span>` : ''}
+                </button>
+            `).join('');
+        }
+
+        function renderFileList() {
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = files.map(file => `
+                <div class="file-item ${file.id === currentFileId ? 'active' : ''}" onclick="switchFile(${file.id})">
+                    <span class="file-icon">📄</span>
+                    ${file.name}
+                </div>
+            `).join('');
+        }
+
+        function addNewFile() {
+            const fileName = prompt('Tên file mới:', `file${++fileIdCounter}.html`);
+            if (fileName) {
+                const newFile = { id: Date.now(), name: fileName, content: '' };
+                files.push(newFile);
+                currentFileId = newFile.id;
+                renderTabs();
+                renderFileList();
+                loadCurrentFile();
+            }
+        }
+
+        function deleteFile(id) {
+            if (files.length === 1) {
+                alert('Không thể xóa file cuối cùng!');
+                return;
+            }
+            if (confirm('Bạn có chắc muốn xóa file này?')) {
+                files = files.filter(f => f.id !== id);
+                if (currentFileId === id) {
+                    currentFileId = files[0].id;
+                    loadCurrentFile();
+                }
+                renderTabs();
+                renderFileList();
+            }
+        }
+
+        function switchFile(id) {
+            saveCurrentFile();
+            currentFileId = id;
+            loadCurrentFile();
+            renderTabs();
+            renderFileList();
+        }
+
+        function saveCurrentFile() {
+            const file = files.find(f => f.id === currentFileId);
+            if (file) {
+                file.content = editor.value;
+            }
+        }
+
+        function loadCurrentFile() {
+            const file = files.find(f => f.id === currentFileId);
+            if (file) {
+                editor.value = file.content;
+                updatePreview();
+                checkErrors();
+            }
+        }
+
+        editor.addEventListener('input', (e) => {
+            updatePreview();
+            checkErrors();
+            updateCharCount();
+            handleAutocomplete(e);
+        });
+
+        editor.addEventListener('keydown', (e) => {
+            if (autocomplete.style.display === 'block') {
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    selectedIndex = Math.min(selectedIndex + 1, autocomplete.children.length - 1);
+                    updateAutocompleteSelection();
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    selectedIndex = Math.max(selectedIndex - 1, 0);
+                    updateAutocompleteSelection();
+                } else if (e.key === 'Enter' && selectedIndex >= 0) {
+                    e.preventDefault();
+                    selectAutocomplete(selectedIndex);
+                } else if (e.key === 'Escape') {
+                    autocomplete.style.display = 'none';
+                }
+            }
+        });
+
+        function handleAutocomplete(e) {
+            const text = editor.value;
+            const pos = editor.selectionStart;
+            const beforeCursor = text.substring(0, pos);
+            const match = beforeCursor.match(/<(\w*)$/);
+
+            if (match) {
+                const search = match[1].toLowerCase();
+                const filtered = htmlTags.filter(tag => tag.startsWith(search));
+
+                if (filtered.length > 0) {
+                    showAutocomplete(filtered, pos);
+                } else {
+                    autocomplete.style.display = 'none';
+                }
+            } else {
+                autocomplete.style.display = 'none';
+            }
+        }
+
+        function showAutocomplete(tags, pos) {
+            const rect = getCaretCoordinates();
+            autocomplete.style.left = rect.left + 'px';
+            autocomplete.style.top = rect.top + 'px';
+            autocomplete.innerHTML = tags.map((tag, idx) => `
+                <div class="autocomplete-item ${idx === 0 ? 'selected' : ''}" onclick="selectTag('${tag}')">
+                    <span class="autocomplete-icon">&lt;&gt;</span>
+                    ${tag}
+                </div>
+            `).join('');
+            autocomplete.style.display = 'block';
+            selectedIndex = 0;
+        }
+
+        function updateAutocompleteSelection() {
+            const items = autocomplete.children;
+            for (let i = 0; i < items.length; i++) {
+                items[i].classList.toggle('selected', i === selectedIndex);
+            }
+            items[selectedIndex]?.scrollIntoView({ block: 'nearest' });
+        }
+
+        function selectAutocomplete(index) {
+            const items = autocomplete.children;
+            if (items[index]) {
+                const tag = items[index].textContent.trim();
+                selectTag(tag);
+            }
+        }
+
+        function selectTag(tag) {
+            const text = editor.value;
+            const pos = editor.selectionStart;
+            const beforeCursor = text.substring(0, pos);
+            const afterCursor = text.substring(pos);
+            const match = beforeCursor.match(/<(\w*)$/);
+
+            if (match) {
+                const newText = beforeCursor.substring(0, match.index) + `<${tag}>` + afterCursor;
+                editor.value = newText;
+                const newPos = match.index + tag.length + 2;
+                editor.setSelectionRange(newPos, newPos);
+                editor.focus();
+            }
+
+            autocomplete.style.display = 'none';
+            updatePreview();
+        }
+
+        function getCaretCoordinates() {
+            const div = document.createElement('div');
+            const style = window.getComputedStyle(editor);
+            div.style.position = 'absolute';
+            div.style.whiteSpace = 'pre-wrap';
+            div.style.font = style.font;
+            div.style.padding = style.padding;
+            div.style.width = editor.offsetWidth + 'px';
+            div.textContent = editor.value.substring(0, editor.selectionStart);
+            document.body.appendChild(div);
+            
+            const span = document.createElement('span');
+            span.textContent = '.';
+            div.appendChild(span);
+            
+            const rect = span.getBoundingClientRect();
+            const editorRect = editor.getBoundingClientRect();
+            document.body.removeChild(div);
+            
+            return {
+                left: rect.left - editorRect.left,
+                top: rect.bottom - editorRect.top + editor.scrollTop
+            };
+        }
+
+        function updatePreview() {
+            saveCurrentFile();
+            const doc = preview.contentDocument || preview.contentWindow.document;
+            doc.open();
+            doc.write(editor.value);
+            doc.close();
+        }
+
+        function checkErrors() {
+            const html = editor.value;
+            const errorList = [];
+
+            const openTags = html.match(/<(\w+)[^>]*>/g) || [];
+            const closeTags = html.match(/<\/(\w+)>/g) || [];
+
+            const tagStack = [];
+            const selfClosing = ['img', 'br', 'hr', 'input', 'meta', 'link'];
+
+            openTags.forEach(tag => {
+                const tagName = tag.match(/<(\w+)/)[1].toLowerCase();
+                if (!selfClosing.includes(tagName)) {
+                    tagStack.push(tagName);
+                }
+            });
+
+            closeTags.forEach(tag => {
+                const tagName = tag.match(/<\/(\w+)>/)[1].toLowerCase();
+                const lastOpen = tagStack.pop();
+                if (lastOpen !== tagName) {
+                    errorList.push(`⚠️ Thẻ đóng không khớp: </${tagName}> (mong đợi </${lastOpen}>)`);
+                }
+            });
+
+            if (tagStack.length > 0) {
+                tagStack.forEach(tag => {
+                    errorList.push(`❌ Thẻ chưa đóng: <${tag}>`);
+                });
+            }
+
+            if (html.includes('<img') && !html.match(/<img[^>]+alt=/)) {
+                errorList.push('💡 Nên thêm thuộc tính "alt" cho thẻ <img>');
+            }
+
+            errors.innerHTML = errorList.length > 0 
+                ? errorList.map(err => `<div class="error-item">${err}</div>`).join('')
+                : '<div style="color: #4ec9b0;">✅ Không có lỗi!</div>';
+
+            document.getElementById('status').textContent = errorList.length > 0 
+                ? `⚠️ ${errorList.length} lỗi` 
+                : '✅ Sẵn sàng';
+        }
+
+        function updateCharCount() {
+            document.getElementById('charCount').textContent = `Ký tự: ${editor.value.length}`;
+        }
+
+        function handleImageUpload(e) {
+            const uploadedFiles = Array.from(e.target.files);
+            uploadedFiles.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const img = {
+                        id: Date.now() + Math.random(),
+                        name: file.name,
+                        data: event.target.result
+                    };
+                    images.push(img);
+                    renderImageGallery();
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function renderImageGallery() {
+            const gallery = document.getElementById('imageGallery');
+            gallery.innerHTML = images.map(img => `
+                <div class="image-item" onclick="insertImage('${img.data}')" title="${img.name}">
+                    <img src="${img.data}" alt="${img.name}">
+                    <button class="image-delete" onclick="event.stopPropagation(); deleteImage(${img.id})">×</button>
+                </div>
+            `).join('');
+        }
+
+        function insertImage(src) {
+            const imgTag = `<img src="${src}" alt="Hình ảnh" style="max-width: 100%; height: auto;">`;
+            const pos = editor.selectionStart;
+            const text = editor.value;
+            editor.value = text.substring(0, pos) + imgTag + text.substring(pos);
+            editor.focus();
+            updatePreview();
+        }
+
+        function deleteImage(id) {
+            images = images.filter(img => img.id !== id);
+            renderImageGallery();
+        }
+
+        function saveProject() {
+            const project = {
+                files: files,
+                images: images
+            };
+            const blob = new Blob([JSON.stringify(project, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'project.minhsoora';
+            a.click();
+            URL.revokeObjectURL(url);
+            alert('✅ Dự án đã được lưu thành công!');
+        }
+
+        function loadProject(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const project = JSON.parse(event.target.result);
+                        files = project.files || [{ id: 1, name: 'index.html', content: '' }];
+                        images = project.images || [];
+                        currentFileId = files[0].id;
+                        renderTabs();
+                        renderFileList();
+                        renderImageGallery();
+                        loadCurrentFile();
+                        alert('✅ Dự án đã được tải thành công!');
+                    } catch (err) {
+                        alert('❌ Lỗi khi tải dự án: ' + err.message);
+                    }
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        // Khởi tạo
+        renderTabs();
+        renderFileList();
+        updateCharCount();
+    </script>
+</body>
+  </html>
